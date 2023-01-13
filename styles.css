@@ -12,6 +12,15 @@ html {
   align-items: center;
 }
 
+.start-btn {
+  margin-bottom: 3rem;
+  padding: 1rem;
+  appearance: none;
+  border-radius: 1rem;
+  border: none;
+  background-color: darkgoldenrod;
+}
+
 .gameGrid {
   display: grid;
   grid-template-columns: repeat(3, 100px);
