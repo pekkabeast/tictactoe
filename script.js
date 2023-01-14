@@ -1,6 +1,6 @@
 //Bind startGame to start game button
-const startGame = document.querySelector(".start-btn");
-startGame.addEventListener("click", game.startGame);
+//const startGame = document.querySelector(".start-btn");
+//startGame.addEventListener("click", game.startGame);
 
 //Game Module
 //Should be able to tell if there has been a win or not
@@ -9,17 +9,6 @@ const game = (() => {
 
   //Function to check if any player won
   const checkWin = (arrBoard) => {
-    /* Winning indices
-    0,3,6
-    1,4,7
-    2,5,8
-    0,1,2
-    3,4,5
-    6,7,8
-    0,4,8
-    2,4,6
-    */
-
     for (let i = 0; i < 3; i++) {
       let marker = document.querySelector(`#${i}`);
       if (marker.textContent != null) {
@@ -83,9 +72,16 @@ const game = (() => {
   };
 
   //function to start game
+  //Should create two player instances
+  //Should initialize arrBoard and display
   const startGame = () => {
-    const player1 = Player("X");
-    const player2 = Player("O");
+    //1. Initialize player instances with marker X and marker O.
+    const player1 = player("X");
+    const player2 = player("O");
+    const player = [player1, player2];
+    //2. Initialize an empty game Board -> fill arrBoard with empty strings and update display.
+    gameBoard.initBoard();
+    //3. Play game where players take turns clicking grids which will update that grid with their respective marker
     while (!checkWin(gameBoard.getBoard()) || turn > 9) {
       player.makeMove();
     }
@@ -93,26 +89,60 @@ const game = (() => {
 })();
 
 //GameBoard Module
-//Should add clickable event for each grid that a player can interact with
-//If grid has already been claimed, should prevent player from clicking it again
 const gameBoard = (() => {
   let arrBoard = [];
+
+  //method to initialize arrboard with empty strings
+  const initBoard = () => {
+    arrBoard = ["", "", "", "", "", "", "", "", ""];
+    displayControl.displayGrid();
+  };
+
+  //getter for arrBoard
   const getBoard = () => arrBoard;
 
-  const setBoard = (index) => {
-    arrBoard.index = currMove();
+  //setter for arrBoard
+  const setBoard = (index, currPlayer) => {
+    arrBoard[index] = currPlayer.getMarker();
   };
 
   return {
     getBoard,
     setBoard,
+    initBoard,
   };
 })();
+
+//Display Controller Module
+const displayControl = (() => {
+  //Function to initialize display
+  const init = () => {
+    const startBtn = document.getElementById("start-btn");
+    startBtn.addEventListener("click", () => game.startGame());
+    const grids = document.querySelectorAll(".gridSquare");
+    grids.forEach((button) =>
+      button.addEventListener("click", game.makeMove())
+    );
+  };
+
+  //function to get the most up to date gameBoard array and then update display with the values
+  const displayGrid = () => {
+    const currBoard = gameBoard.getBoard();
+    for (let i = 0; i < currBoard.length; i++) {
+      let currGrid = document.getElementById(`${i}`);
+      currGrid.textContent = currBoard[i];
+    }
+  };
+
+  return { init, displayGrid };
+})();
+
+displayControl.init();
 
 //Player factory function
 //Should contain method to click on gameboard and place marker
 const player = (marker) => {
-  const marker = marker;
+  const getMarker = () => marker;
 
-  const makeMove = () => {};
+  return { getMarker };
 };

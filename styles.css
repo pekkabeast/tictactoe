@@ -6,8 +6,9 @@
 body,
 html {
   height: 100%;
+  min-height: 425px;
   display: flex;
-  flex-flow: column;
+  flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
 }
@@ -18,7 +19,13 @@ html {
   appearance: none;
   border-radius: 1rem;
   border: none;
-  background-color: darkgoldenrod;
+  background-color: #f97316;
+  box-shadow: 1px 1px gray;
+}
+
+.start-btn:active {
+  box-shadow: none;
+  background-color: #9a3412;
 }
 
 .gameGrid {
