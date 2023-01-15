@@ -23,7 +23,6 @@ const game = (() => {
         arrBoard[i + 3] == marker &&
         arrBoard[i + 6] == marker
       ) {
-        console.log(1);
         return true;
       }
     }
@@ -41,7 +40,6 @@ const game = (() => {
         arrBoard[i + 1] == marker &&
         arrBoard[i + 2] == marker
       ) {
-        console.log(2);
         return true;
       }
     }
@@ -63,7 +61,6 @@ const game = (() => {
       arrBoard[4] == marker0 &&
       arrBoard[8] == marker0
     ) {
-      console.log(3);
       return true;
     }
     if (
@@ -71,7 +68,6 @@ const game = (() => {
       arrBoard[4] == marker2 &&
       arrBoard[6] == marker2
     ) {
-      console.log(4);
       return true;
     }
 
@@ -81,10 +77,9 @@ const game = (() => {
   //Function to start game
   //Should create two player instances
   //Should initialize arrBoard and display
-  const startGame = () => {
+  const startGame = (player1, player2) => {
     //1. Initialize player instances with marker X and marker O.
-    const player1 = player("X");
-    const player2 = player("O");
+    turn = 0;
     const playerArr = [player1, player2];
     //2. Initialize an empty game Board -> fill arrBoard with empty strings and update display.
     gameBoard.initBoard();
@@ -104,16 +99,23 @@ const game = (() => {
       }
     };
 
+    /*
+    Test:
+    0 8 6 2 4 5
+    0 8 6 4 2 5 3
+    */
     const makeMove = (event, player) => {
-      console.log(event.target);
       turn += 1;
+      console.log("turn" + turn);
       event.target.textContent = player.marker;
-      console.log(event.target.id);
+      console.log("marker" + player.marker + " " + event.target.id);
       gameBoard.setBoard(event.target.id, player);
 
       event.target.removeEventListener("click", handler);
       if (__checkWin(gameBoard.getBoard())) {
-        __endGame(player.name);
+        __endGame(player.name, handler);
+      } else if (turn >= 9) {
+        __draw(handler);
       }
     };
 
@@ -122,10 +124,25 @@ const game = (() => {
     grids.forEach((button) => button.addEventListener("click", handler));
   };
 
-  const __endGame = () => {
+  const __draw = (handler) => {
+    const h1winner = document.querySelector(".winner");
+    h1winner.textContent = "Draw!";
+    const grids = document.querySelectorAll(".gridSquare");
+    grids.forEach((button) => button.removeEventListener("click", handler));
+
     const endOverlay = document.querySelector(".end-overlay");
     endOverlay.style.display = "flex";
-    turn = 0;
+  };
+
+  const __endGame = (name, handler) => {
+    const h1winner = document.querySelector(".winner");
+    h1winner.textContent = `Player ${name} wins!`;
+
+    const grids = document.querySelectorAll(".gridSquare");
+    grids.forEach((button) => button.removeEventListener("click", handler));
+
+    const endOverlay = document.querySelector(".end-overlay");
+    endOverlay.style.display = "flex";
   };
   return { startGame };
 })();
@@ -170,12 +187,19 @@ const displayControl = (() => {
     };
     //Allow start button to reset grid and start game
     const startBtn = document.getElementById("start-btn");
-    startBtn.addEventListener("click", () => game.startGame());
+    startBtn.addEventListener("click", () => showForm());
     startBtn.addEventListener("click", removeOverlay);
 
     //Allow restart button to reset grid and play again
     const restartBtn = document.getElementById("restart-btn");
-    restartBtn.addEventListener("click", () => game.startGame());
+    restartBtn.addEventListener("click", () => {
+      console.log("reset");
+      const player1name = document.getElementById("player1-name");
+      const player2name = document.getElementById("player2-name");
+      const player1 = player("X", player1name.getAttribute("data-name"));
+      const player2 = player("O", player2name.getAttribute("data-name"));
+      game.startGame(player1, player2);
+    });
     restartBtn.addEventListener("click", removeEndOverlay);
   };
 
@@ -188,7 +212,33 @@ const displayControl = (() => {
     }
   };
 
-  return { init, displayGrid };
+  const showForm = () => {
+    const namesFormWrapper = document.querySelector(".playernames");
+    namesFormWrapper.classList.toggle("no-overlay");
+
+    const addNames = (event) => {
+      namesFormWrapper.classList.add("no-overlay");
+      console.log(namesFormWrapper);
+      const player1 = player("X", document.getElementById("player1").value);
+      const player2 = player("O", document.getElementById("player2").value);
+
+      const player1name = document.getElementById("player1-name");
+      const player2name = document.getElementById("player2-name");
+
+      player1name.textContent = `Player ${player1.name}: X`;
+      player1name.setAttribute("data-name", player1.name);
+      player2name.setAttribute("data-name", player2.name);
+      player2name.textContent = `Player ${player2.name}: O`;
+      event.preventDefault();
+      game.startGame(player1, player2);
+      event.target.reset();
+    };
+
+    const namesForm = document.getElementById("nameSubmission");
+    namesForm.addEventListener("submit", addNames);
+  };
+
+  return { init, displayGrid, showForm };
 })();
 
 displayControl.init();

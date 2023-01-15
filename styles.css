@@ -44,7 +44,8 @@ html {
 }
 
 .blur-overlay,
-.end-overlay {
+.end-overlay,
+.playernames {
   position: absolute;
   padding-top: 5rem;
   width: 100%;
@@ -56,6 +57,31 @@ html {
   align-items: center;
 }
 
+.inputwrapper {
+  margin: 1rem;
+}
+
+#nameSubmission {
+  background-color: #fdba74;
+  display: flex;
+  flex-flow: column;
+  padding: 2rem;
+  border-radius: 1rem;
+}
+
+#nameSubmission > input[type="submit"] {
+  width: 50%;
+  align-self: center;
+  appearance: none;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background-color: lightgreen;
+}
+
+#nameSubmission > input[type="submit"]:active {
+  background-color: green;
+}
 .end-overlay {
   display: none;
 }
